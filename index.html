@@ -58,15 +58,32 @@ body {
 .eq .arr { color: var(--accent); }
 
 /* ── Layout ── */
+.layout-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+}
 .layout {
   display: grid;
   grid-template-columns: 1fr 340px;
   gap: 16px;
   align-items: start;
 }
+/* 3 Spalten ab 1300px: Gefäß | Diagramme | Panel */
+@media(min-width:1300px){
+  .layout { grid-template-columns: 1fr 1fr 320px; row-gap: 0; }
+  #left-col    { display: contents; }
+  #col1-wrap   { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; gap: 14px; }
+  #vessel-section, #card-chart { width: 100%; }
+  #card-chart  { margin-top: 0 !important; }
+  #mid-col     { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; gap: 14px; }
+  #mid-col .card { margin-top: 0 !important; }
+  .panel       { grid-column: 3; grid-row: 1; display: flex !important; flex-direction: column; gap: 14px; align-self: start; }
+}
 @media(max-width:900px){
   .layout              { display: flex !important; flex-direction: column; align-items: flex-start; }
   #left-col            { display: contents !important; }
+  #col1-wrap           { display: contents !important; }
+  #mid-col             { display: contents !important; }
   div.panel            { display: contents !important; }
   /* Alle Kacheln auf dieselbe Breite wie das Reaktionsgefäß */
   #vessel-section,
@@ -418,22 +435,24 @@ button {
   </div>
 </div>
 
+<div class="layout-wrap">
 <div class="layout">
 
   <!-- Left: Reaction vessel -->
   <div id="left-col">
+  <div id="col1-wrap">
     <div id="vessel-section">
     <div class="vessel-wrap" id="vesselWrap">
       <span class="vessel-label">Reaktionsgefäß</span>
       <canvas id="reactionCanvas"></canvas>
     </div>
-    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:nowrap;overflow:hidden">
       <div class="btn-row" style="margin:0">
         <button class="btn-go"    onclick="startSim()">▶ Start</button>
         <button class="btn-pause" onclick="togglePause()" id="pauseBtn">⏸ Pause</button>
         <button class="btn-reset" onclick="resetSim()">↺ Reset</button>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;flex-shrink:0">
         <span style="font-size:9px;color:var(--muted);font-family:'IBM Plex Mono',monospace;white-space:nowrap">Teilchenzahl</span>
         <div style="display:flex;gap:4px">
           <div style="background:rgba(255,107,74,0.1);border:1px solid rgba(255,107,74,0.35);border-radius:5px;padding:3px 7px;text-align:center">
@@ -459,7 +478,7 @@ button {
 
     </div><!-- /vessel-section -->
 
-    <!-- Chart -->
+    <!-- Chart (unter Gefäß in 3-Spalten) -->
     <div class="card" id="card-chart" style="margin-top:14px">
       <div class="card-header" onclick="toggleCard(this)">
         <div class="card-title">Konzentration über Zeit</div>
@@ -472,6 +491,9 @@ button {
       </div>
     </div>
 
+  </div><!-- /col1-wrap -->
+
+    <div id="mid-col">
     <!-- Energy profile -->
     <div class="card" id="card-energy" style="margin-top:14px">
       <div class="card-header" onclick="toggleCard(this)">
@@ -512,7 +534,8 @@ button {
         </div>
       </div>
     </div>
-  </div>
+    </div><!-- /mid-col -->
+  </div><!-- /left-col -->
 
   <!-- Right: Panel -->
   <div class="panel">
@@ -649,9 +672,8 @@ button {
         <input type="range" id="sl-speed" min="0.1" max="2.0" step="0.1" value="0.5"
                oninput="document.getElementById('lbl-speed').textContent=(parseFloat(this.value)*2).toFixed(1).replace(/\.0$/,'')+'×'; sim.speedScale=parseFloat(this.value);">
       </div>
-      </div>
-      </div><!-- card-body -->
-    </div>
+      </div><!-- /card-body -->
+    </div><!-- /card-startbed -->
 
     <!-- Le Chatelier -->
     <div class="card" id="card-lechatelier">
@@ -692,10 +714,7 @@ button {
 
   </div>
 </div>
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</div><!-- /layout-wrap --><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
